@@ -1,0 +1,99 @@
+<div class="app-container">
+  <aside
+    #sidebarEl
+    class="sidebar"
+    id="sidebar"
+    aria-label="Menú lateral"
+    aria-hidden="true"
+    data-state="0"
+    inert
+  >
+    <div #sidebarInnerEl id="sidebarInner" class="sidebar-inner">
+      <app-left-sidebar />
+    </div>
+  </aside>
+
+  <aside
+    #rightSidebarEl
+    class="right-sidebar"
+    id="rightSidebar"
+    aria-label="Menú lateral derecho"
+    aria-hidden="true"
+    data-state="0"
+    inert
+  >
+    <div #rightSidebarInnerEl id="rightSidebarInner" class="sidebar-inner">
+      <app-right-sidebar />
+    </div>
+  </aside>
+
+  <div #sidebarShadowEl id="sidebarShadow" class="sidebar-edge-shadow" aria-hidden="true"></div>
+  <div
+    #rightSidebarShadowEl
+    id="rightSidebarShadow"
+    class="right-sidebar-edge-shadow"
+    aria-hidden="true"
+  ></div>
+  <div #overlayEl id="overlay" class="drawer-overlay" aria-hidden="true"></div>
+
+  <div #envoltorioEl id="envoltorio" class="main-content">
+    <header>
+      <div class="header-content">
+        <button
+          #openBtnEl
+          type="button"
+          class="icon-button"
+          id="openSidebar"
+          aria-label="Abrir o cerrar menú"
+          aria-expanded="false"
+          aria-controls="sidebar"
+          (click)="drawer.toggleLeft()"
+        >
+          <span class="material-symbols-outlined icon">menu</span>
+        </button>
+        <h1>Calculadora Nutricional</h1>
+        <button
+          #openRightBtnEl
+          type="button"
+          class="icon-button"
+          id="openRightSidebar"
+          aria-label="Abrir o cerrar menú derecho"
+          aria-expanded="false"
+          aria-controls="rightSidebar"
+          (click)="drawer.toggleRight()"
+        >
+          <span class="material-symbols-outlined icon">tune</span>
+        </button>
+      </div>
+    </header>
+
+    <main>
+      @for (comida of comidas; track comida) {
+        <app-meal-section [comida]="comida" />
+      }
+      <app-total-section />
+    </main>
+  </div>
+
+  <button #fabEl type="button" class="fab" aria-label="Añadir">
+    <span class="material-symbols-outlined">add</span>
+  </button>
+</div>
+
+@if (ui.activePage(); as activePage) {
+  @if (activePage === 'total') {
+    <app-total-page />
+  } @else {
+    <app-meal-page [comida]="activePage" />
+  }
+}
+
+<app-vdr-panel />
+
+<app-distribution-panel />
+
+<app-settings-modal />
+
+<app-alert-modal />
+
+<app-toast />

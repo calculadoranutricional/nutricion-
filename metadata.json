@@ -1,0 +1,6 @@
+{
+  "name": "Calculadora Nutricional",
+  "description": "Calculadora nutricional modular para el registro de comidas, cálculo de macronutrientes y micronutrientes, VDR% y perfiles de usuario.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
