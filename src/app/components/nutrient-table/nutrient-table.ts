@@ -122,7 +122,7 @@ export class NutrientTable {
               if (esTotal) {
                 color = colorPorcentajeVDR(p, 100, true);
               } else {
-                const obj = dist[comida] || 25;
+                const obj = dist[comida] ?? 25;
                 color = colorPorcentajeVDR(p, obj, false);
               }
             }

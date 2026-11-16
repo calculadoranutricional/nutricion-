@@ -20,7 +20,7 @@ import { NutrientTable } from '../nutrient-table/nutrient-table';
     <div id="total-page" class="full-page-overlay">
       <div class="barra">
         <button type="button" class="icon-button cerrar" aria-label="Cerrar" (click)="cerrar()">×</button>
-        <h3>Resumen Total</h3>
+        <h3>Resumen total</h3>
       </div>
 
       <div class="full-page-body" id="total-body">
@@ -59,6 +59,7 @@ import { NutrientTable } from '../nutrient-table/nutrient-table';
           <app-donut-chart
             chartKey="total"
             [totales]="totales()"
+            [vdr]="vdr()"
             [visible]="graficoVisible()"
           />
         </div>

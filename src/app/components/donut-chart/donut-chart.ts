@@ -11,14 +11,18 @@ import {
   viewChild,
 } from '@angular/core';
 import Chart from 'chart.js/auto';
+import { VDR_BASE } from '../../data/nutrients.data';
+import { calcularPorcentajesMacrosVDR } from '../../utils/nutrition.utils';
 
-const CHART_LABELS = ['Energía', 'Proteínas', 'Carbohidratos', 'Grasas totales'];
-const CHART_COLORS = ['#00BCD4', '#4CAF50', '#FFEB3B', '#F44336'];
+const CHART_LABELS = ['Energía', 'Proteínas', 'Grasas totales', 'Carbohidratos'];
+const FALLBACK_COLORS_LIGHT = ['#4285f4', '#ea4335', '#34a853', '#fbbc04'];
+const FALLBACK_COLORS_DARK = ['#8ab4f8', '#f28b82', '#81c995', '#fdd663'];
+const CHART_COLOR_VARS = ['--blue', '--red', '--green', '--yellow'];
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-donut-chart',
-  template: `<div #container style="width:100%;"><canvas #canvasEl [id]="'grafico-' + chartKey()"></canvas></div>`,
+  template: `<div #container style="width:100%; max-width:400px; margin:0 auto;"><canvas #canvasEl [id]="'grafico-' + chartKey()"></canvas></div>`,
 })
 export class DonutChart {
   private readonly platformId = inject(PLATFORM_ID);
@@ -26,6 +30,7 @@ export class DonutChart {
 
   readonly chartKey = input.required<string>();
   readonly totales = input.required<Record<string, number | null>>();
+  readonly vdr = input<Record<string, number>>(VDR_BASE);
   readonly visible = input<boolean>(true);
 
   private readonly containerRef = viewChild<ElementRef<HTMLDivElement>>('container');
@@ -34,17 +39,23 @@ export class DonutChart {
   private chart: Chart<'doughnut', number[], string> | null = null;
   private activeCanvas: HTMLCanvasElement | null = null;
   private ultimosTotales: Record<string, number | null> = {};
+  private ultimoVdr: Record<string, number> = VDR_BASE;
   private contextListenerAttached = false;
   private contextLostTimer: ReturnType<typeof setTimeout> | null = null;
   private colorSchemeMedia: MediaQueryList | null = null;
 
   private readonly onColorSchemeChange = () => {
     if (!this.chart) return;
+    const dataset = this.chart.data.datasets[0];
+    if (dataset) {
+      dataset.backgroundColor = this.getChartColors();
+      dataset.borderColor = this.getBorderColor();
+    }
     const legend = this.chart.options.plugins?.legend;
     if (legend?.labels) {
       legend.labels.color = this.getLegendColor();
-      this.chart.update('none');
     }
+    this.chart.update('none');
   };
 
   constructor() {
@@ -57,6 +68,7 @@ export class DonutChart {
       const isVisible = this.visible();
       const key = this.chartKey();
       const totales = this.totales();
+      const vdr = this.vdr() || VDR_BASE;
 
       if (!isPlatformBrowser(this.platformId)) return;
 
@@ -70,7 +82,7 @@ export class DonutChart {
       }
 
       if (this.activeCanvas && key) {
-        this.renderGrafico(totales);
+        this.renderGrafico(totales, vdr);
       }
     });
 
@@ -88,10 +100,34 @@ export class DonutChart {
   }
 
   private getLegendColor(): string {
-    return this.colorSchemeMedia?.matches ? '#d4d4d4' : '#3c4043';
+    if (isPlatformBrowser(this.platformId)) {
+      const titleColor = getComputedStyle(document.documentElement)
+        .getPropertyValue('--title-color')
+        .trim();
+      if (titleColor) return titleColor;
+    }
+    return this.colorSchemeMedia?.matches ? '#ffffff' : '#545961';
   }
 
-  private renderGrafico(totales: Record<string, number | null>): void {
+  private getBorderColor(): string {
+    if (isPlatformBrowser(this.platformId)) {
+      const bg = getComputedStyle(document.documentElement).getPropertyValue('--bg').trim();
+      if (bg) return bg;
+    }
+    return this.colorSchemeMedia?.matches ? '#1f1f1f' : '#ffffff';
+  }
+
+  private getChartColors(): string[] {
+    const fallbacks = this.colorSchemeMedia?.matches ? FALLBACK_COLORS_DARK : FALLBACK_COLORS_LIGHT;
+    if (!isPlatformBrowser(this.platformId)) return fallbacks;
+    const styles = getComputedStyle(document.documentElement);
+    return CHART_COLOR_VARS.map((v, i) => styles.getPropertyValue(v).trim() || fallbacks[i]);
+  }
+
+  private renderGrafico(
+    totales: Record<string, number | null>,
+    vdr: Record<string, number>,
+  ): void {
     const canvas = this.activeCanvas;
     if (!canvas) return;
 
@@ -106,8 +142,12 @@ export class DonutChart {
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
 
-    const datos = CHART_LABELS.map((l) => Number(totales[l]) || 0);
+    const p = calcularPorcentajesMacrosVDR(totales, vdr);
+    const datos = [p.energia, p.proteinas, p.grasas, p.carbohidratos];
+    const colors = this.getChartColors();
+    const borderColor = this.getBorderColor();
     this.ultimosTotales = totales;
+    this.ultimoVdr = vdr;
 
     if (!this.chart) {
       this.chart = new Chart(ctx, {
@@ -117,23 +157,40 @@ export class DonutChart {
           datasets: [
             {
               data: datos,
-              backgroundColor: CHART_COLORS,
+              backgroundColor: colors,
+              borderColor,
+              borderWidth: 2,
             },
           ],
         },
         options: {
           responsive: true,
+          rotation: -90,
           animation: { duration: 0 },
           plugins: {
             legend: {
               position: 'bottom',
               labels: { color: this.getLegendColor() },
             },
+            tooltip: {
+              callbacks: {
+                label: (tooltipCtx) => {
+                  const label = tooltipCtx.label || '';
+                  const pctVdr = Number(tooltipCtx.parsed) || 0;
+                  const raw = Number(this.ultimosTotales[label]) || 0;
+                  const unit = label === 'Energía' ? 'kcal' : 'g';
+                  const rawStr = Number.isInteger(raw) ? String(raw) : raw.toFixed(1);
+                  return ` ${label}: ${pctVdr.toFixed(1)}% VDR (${rawStr} ${unit})`;
+                },
+              },
+            },
           },
         },
       });
     } else {
       this.chart.data.datasets[0].data = datos;
+      this.chart.data.datasets[0].backgroundColor = colors;
+      this.chart.data.datasets[0].borderColor = borderColor;
       if (this.chart.options.plugins?.legend?.labels) {
         this.chart.options.plugins.legend.labels.color = this.getLegendColor();
       }
@@ -154,13 +211,14 @@ export class DonutChart {
     container.replaceChild(nuevoCanvas, viejoCanvas);
 
     const totalesPrevios = { ...this.ultimosTotales };
+    const vdrPrevio = { ...this.ultimoVdr };
     this.destruirGrafico();
     this.activeCanvas = nuevoCanvas;
     this.contextListenerAttached = false;
 
     this.contextLostTimer = setTimeout(() => {
       if (this.visible()) {
-        this.renderGrafico(totalesPrevios);
+        this.renderGrafico(totalesPrevios, vdrPrevio);
       }
     }, 100);
   }

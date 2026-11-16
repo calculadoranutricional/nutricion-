@@ -55,6 +55,15 @@ export class NutritionStore {
     return calcularTotalesComida(this.totalItemsActivo(), true);
   });
 
+  readonly comidasConAlimentosCount = computed<number>(() => {
+    const comidasMap = this.datosComidas();
+    return COMIDAS.reduce((count, c) => count + ((comidasMap[c]?.length ?? 0) > 0 ? 1 : 0), 0);
+  });
+
+  readonly mostrarResumenTotal = computed<boolean>(() => {
+    return this.comidasConAlimentosCount() >= 2;
+  });
+
   constructor() {
     this.inicializarEstado();
     this.cargarDesdeStorage();
@@ -252,7 +261,7 @@ export class NutritionStore {
   }
 
   actualizarVDR(nuevoVdr: Record<string, number>): void {
-    this.vdr.update((prev) => ({ ...prev, ...nuevoVdr }));
+    this.vdr.set({ ...nuevoVdr });
     this.guardarEnStorage();
   }
 
@@ -329,7 +338,7 @@ export class NutritionStore {
                   ? '❗'
                   : '❌';
           } else {
-            const obj = distMap[comida] || 25;
+            const obj = distMap[comida] ?? 25;
             const m = obj * 0.05;
             icono =
               porc >= obj - m && porc <= obj + m

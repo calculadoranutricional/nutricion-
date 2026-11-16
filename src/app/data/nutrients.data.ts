@@ -438,19 +438,13 @@ export const NUTRIENTES: ArbolNutrientes = {
   },
 };
 
-export const VDR_BASE: Record<string, number> = {
-  Agua: 2000,
-  'Sólidos totales': 3000,
-  Energía: 2000,
-  Proteínas: 50,
-  Carbohidratos: 300,
-  'Grasas totales': 70,
-};
+export const VDR_BASE: Record<string, number> = {};
 
 export const COLORES_VDR = {
   verde: 'var(--green)',
   amarillo: 'var(--yellow)',
   rojo: 'var(--red)',
+  neutro: 'var(--text-secondary)',
 };
 
 export const DISTRIBUCION_VDR_BASE: Record<string, number> = {

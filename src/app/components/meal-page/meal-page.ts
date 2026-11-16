@@ -152,6 +152,7 @@ interface ItemDisplay {
             <app-donut-chart
               [chartKey]="comida()"
               [totales]="totales()"
+              [vdr]="vdr()"
               [visible]="items().length > 0 && graficoVisible()"
             />
           </div>

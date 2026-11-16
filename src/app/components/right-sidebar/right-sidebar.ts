@@ -49,7 +49,7 @@ export class RightSidebar {
   readonly comidas = COMIDAS;
 
   readonly metaEnergia = computed(() => {
-    return Math.round(this.store.vdr()['Energía'] || VDR_BASE['Energía'] || 2000);
+    return Math.round(this.store.vdr()['Energía'] || VDR_BASE['Energía'] || 0);
   });
 
   readonly distribucion = computed(() => {
