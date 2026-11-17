@@ -1,5 +1,6 @@
 import { isPlatformBrowser } from '@angular/common';
 import {
+  afterRenderEffect,
   ChangeDetectionStrategy,
   Component,
   computed,
@@ -41,7 +42,8 @@ interface ItemDisplay {
       </div>
 
       <div class="full-page-body" [id]="'comida-' + comida()">
-        <div class="contenedor-select">
+        <div class="contenedor-select" [class.select-activo]="categoriaSeleccionada() !== ''">
+          <span class="material-symbols-outlined select-icon-left" aria-hidden="true">category</span>
           <select
             [id]="'cat-' + comida()"
             class="select-categorias"
@@ -53,6 +55,7 @@ interface ItemDisplay {
               <option [value]="c">{{ c }}</option>
             }
           </select>
+          <span class="material-symbols-outlined select-icon-right" aria-hidden="true">expand_more</span>
         </div>
 
         <div class="fila-comida">
@@ -97,8 +100,9 @@ interface ItemDisplay {
         <div [id]="'lista-' + comida()">
           @if (itemsDisplay().length > 0) {
             <div
-              class="sin-scrollbar"
-              [style.maxHeight]="itemsDisplay().length > 5 ? '180px' : null"
+              #listaScrollEl
+              class="sin-scrollbar lista-comida-scroll"
+              [style.maxHeight]="itemsDisplay().length > 5 ? (listaMaxHeight() ?? '180px') : null"
               [style.overflowY]="itemsDisplay().length > 5 ? 'auto' : null"
             >
               <table>
@@ -135,15 +139,45 @@ interface ItemDisplay {
         </div>
 
         <div class="contenedor0" [class.hidden]="items().length === 0">
-          <div class="contenedor">
-            <button type="button" [id]="'btn-grafico-' + comida()" (click)="toggleGrafico()">
-              {{ graficoVisible() ? 'Ocultar gráfico' : 'Mostrar gráfico' }}
+          <div class="vista-toggle-bar">
+            <button
+              type="button"
+              [id]="'btn-grafico-' + comida()"
+              [class.vista-btn-activo]="graficoVisible()"
+              [class.vista-btn-inactivo]="!graficoVisible()"
+              [attr.aria-pressed]="graficoVisible()"
+              [attr.aria-label]="graficoVisible() ? 'Ocultar gráfico' : 'Mostrar gráfico'"
+              [title]="graficoVisible() ? 'Ocultar gráfico' : 'Mostrar gráfico'"
+              (click)="toggleGrafico()"
+            >
+              <span class="material-symbols-outlined" aria-hidden="true">donut_large</span>
+              <span class="btn-label">Gráfico</span>
             </button>
-            <button type="button" [id]="'btn-seccion-' + comida()" (click)="toggleSeccion()">
-              Gráfico-Tablas
+            <button
+              type="button"
+              [id]="'btn-seccion-' + comida()"
+              [class.vista-btn-inactivo]="!graficoVisible() && !tablaVisible()"
+              [attr.aria-label]="!graficoVisible() && !tablaVisible() ? 'Mostrar gráfico y tablas' : 'Ocultar gráfico y tablas'"
+              [title]="!graficoVisible() && !tablaVisible() ? 'Mostrar gráfico y tablas' : 'Ocultar gráfico y tablas'"
+              (click)="toggleSeccion()"
+            >
+              <span class="material-symbols-outlined" aria-hidden="true">
+                {{ !graficoVisible() && !tablaVisible() ? 'visibility' : 'visibility_off' }}
+              </span>
+              <span class="btn-label">Todo</span>
             </button>
-            <button type="button" [id]="'btn-tabla-' + comida()" (click)="toggleTabla()">
-              {{ tablaVisible() ? 'Ocultar tablas' : 'Mostrar tablas' }}
+            <button
+              type="button"
+              [id]="'btn-tabla-' + comida()"
+              [class.vista-btn-activo]="tablaVisible()"
+              [class.vista-btn-inactivo]="!tablaVisible()"
+              [attr.aria-pressed]="tablaVisible()"
+              [attr.aria-label]="tablaVisible() ? 'Ocultar tablas' : 'Mostrar tablas'"
+              [title]="tablaVisible() ? 'Ocultar tablas' : 'Mostrar tablas'"
+              (click)="toggleTabla()"
+            >
+              <span class="material-symbols-outlined" aria-hidden="true">table_chart</span>
+              <span class="btn-label">Tablas</span>
             </button>
           </div>
 
@@ -158,16 +192,37 @@ interface ItemDisplay {
           </div>
 
           <div [id]="'seccion1-' + comida()" [class.hidden]="!tablaVisible()">
-            <button type="button" [id]="'btn-nutrientes-' + comida()" (click)="toggleNutrientes()">
-              {{
-                mostrarTodos()
-                  ? 'Ocultar vacíos'
-                  : 'Mostrar todos'
-              }}
-            </button>
-            <button type="button" [id]="'btn-aplicar-' + comida()" (click)="toggleAlternar()">
-              {{ modoManual() ? 'Aplicar nutrientes' : 'Agregar nutrientes' }}
-            </button>
+            <div class="tabla-actions-bar" [class.modo-manual]="modoManual()">
+              @if (!modoManual()) {
+                <button
+                  type="button"
+                  [id]="'btn-nutrientes-' + comida()"
+                  [class.vista-btn-activo]="mostrarTodos()"
+                  [class.vista-btn-inactivo]="!mostrarTodos()"
+                  [attr.aria-pressed]="mostrarTodos()"
+                  [attr.aria-label]="mostrarTodos() ? 'Ocultar nutrientes vacíos' : 'Mostrar todos los nutrientes'"
+                  [title]="mostrarTodos() ? 'Ocultar nutrientes vacíos' : 'Mostrar todos los nutrientes'"
+                  (click)="toggleNutrientes()"
+                >
+                  <span class="material-symbols-outlined" aria-hidden="true">checklist</span>
+                  <span class="btn-label">Todos</span>
+                </button>
+              }
+              <button
+                type="button"
+                [id]="'btn-aplicar-' + comida()"
+                [class.vista-btn-activo]="modoManual()"
+                [attr.aria-pressed]="modoManual()"
+                [attr.aria-label]="modoManual() ? 'Aplicar nutrientes' : 'Agregar nutrientes'"
+                [title]="modoManual() ? 'Aplicar nutrientes' : 'Agregar nutrientes'"
+                (click)="toggleAlternar()"
+              >
+                <span class="material-symbols-outlined" aria-hidden="true">
+                  {{ modoManual() ? 'check' : 'edit_note' }}
+                </span>
+                <span class="btn-label">{{ modoManual() ? 'Aplicar' : 'Agregar' }}</span>
+              </button>
+            </div>
             <h4 [id]="'titulo-tabla-' + comida()" [class.hidden]="modoManual()">Tabla Nutricional</h4>
             <div [id]="'tabla-' + comida()" [class.hidden]="modoManual()">
               <app-nutrient-table
@@ -189,7 +244,8 @@ interface ItemDisplay {
               />
             </div>
             <button type="button" class="btn-compartir" (click)="compartirResultados()">
-              Compartir resultados
+              <span class="material-symbols-outlined" aria-hidden="true">share</span>
+              <span class="btn-label">Compartir</span>
             </button>
           </div>
         </div>
@@ -207,6 +263,7 @@ export class MealPage {
   private readonly buscarRef = viewChild<ElementRef<HTMLDivElement>>('buscarEl');
   private readonly sugerenciasRef = viewChild<ElementRef<HTMLUListElement>>('sugerenciasEl');
   private readonly pesoRef = viewChild<ElementRef<HTMLDivElement>>('pesoEl');
+  private readonly listaScrollRef = viewChild<ElementRef<HTMLDivElement>>('listaScrollEl');
   private readonly manualEditorRef = viewChild<ManualEditor>('manualEditor');
 
   readonly categorias = CATEGORIAS;
@@ -216,6 +273,28 @@ export class MealPage {
   readonly graficoVisible = signal<boolean>(true);
   readonly tablaVisible = signal<boolean>(true);
   readonly modoManual = signal<boolean>(false);
+  readonly listaMaxHeight = signal<string | null>(null);
+
+  constructor() {
+    afterRenderEffect(() => {
+      const count = this.itemsDisplay().length;
+      const container = this.listaScrollRef()?.nativeElement;
+      if (!isPlatformBrowser(this.platformId) || count <= 5 || !container) {
+        if (this.listaMaxHeight() !== null) {
+          this.listaMaxHeight.set(null);
+        }
+        return;
+      }
+      const rows = container.querySelectorAll<HTMLTableRowElement>('tbody tr');
+      const fifthRow = rows.item(4);
+      if (fifthRow) {
+        const exactHeight = `${fifthRow.offsetTop + fifthRow.offsetHeight}px`;
+        if (this.listaMaxHeight() !== exactHeight) {
+          this.listaMaxHeight.set(exactHeight);
+        }
+      }
+    });
+  }
 
   readonly items = computed(() => {
     return this.store.datosComidas()[this.comida()] || [];

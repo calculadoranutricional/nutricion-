@@ -20,6 +20,9 @@
   --text-secondary: #70757d;
   --border: #cfd5dd;
   --hover-bg: #eef1f4;
+  --focus-border: #5f6368;
+  --app-gradient: linear-gradient(90deg, var(--blue), var(--red), var(--yellow), var(--green));
+  --app-icon-gradient: linear-gradient(135deg, var(--blue) 15%, var(--red) 40%, var(--yellow) 65%, var(--green) 88%);
 }
 
 @media (prefers-color-scheme: dark) {
@@ -40,6 +43,7 @@
     --text-secondary: #a8a8a8;
     --border: #474747;
     --hover-bg: #383838;
+    --focus-border: #a8a8a8;
   }
 }
 
@@ -353,7 +357,11 @@ button {
 }
 
 .menu-item.active .material-symbols-outlined {
-  color: var(--blue);
+  background: var(--app-icon-gradient);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
 }
 
 .menu-section {
@@ -644,11 +652,19 @@ app-total-section {
       var(--green)
     )
     border-box;
-  color: var(--blue);
+  color: var(--title-color);
   cursor: pointer;
   will-change: transform;
   backface-visibility: hidden;
   -webkit-tap-highlight-color: transparent;
+}
+
+.fab .material-symbols-outlined {
+  background: var(--app-icon-gradient);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
 }
 
 @media (min-width: 768px) {
@@ -920,9 +936,9 @@ table td {
   border: 1px solid var(--border);
   border-spacing: 0;
   border-radius: 12px;
-  word-wrap: break-word;
-  white-space: normal;
-  overflow-wrap: break-word;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
   font-variant-numeric: tabular-nums;
 }
 
@@ -982,6 +998,14 @@ table td.tabla-subcategoria {
   font-size: 0.78rem;
 }
 
+table tr.descripcion-nutriente td {
+  white-space: normal;
+  overflow: visible;
+  text-overflow: clip;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+}
+
 .barra {
   position: sticky;
   top: 0;
@@ -1016,7 +1040,7 @@ table td.tabla-subcategoria {
   border: none;
   font-size: 0.85rem;
   font-weight: 600;
-  color: var(--blue);
+  color: var(--title-color);
   padding: 6px 10px;
   border-radius: 8px;
 }
@@ -1162,6 +1186,35 @@ button.transparente {
   margin: 0 0 0.5rem 0;
 }
 
+.contenedor-select .select-icon-left,
+.contenedor-select .select-icon-right {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  pointer-events: none;
+  line-height: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-secondary);
+  transition: color 0.15s ease;
+}
+
+.contenedor-select .select-icon-left {
+  left: 11px;
+  font-size: 16px;
+}
+
+.contenedor-select .select-icon-right {
+  right: 10px;
+  font-size: 18px;
+}
+
+.contenedor-select.select-activo .select-icon-left,
+.contenedor-select.select-activo .select-icon-right {
+  color: var(--title-color);
+}
+
 .select-editor {
   display: block;
   width: 100%;
@@ -1187,21 +1240,35 @@ button.transparente {
 .select-categorias {
   box-sizing: border-box;
   text-align: center;
+  text-align-last: center;
   font-weight: 600;
+  appearance: none;
   -webkit-appearance: none;
-  font-size: 0.8rem;
-  padding: 7px 12px;
-  border: 1px solid var(--border);
+  font-size: 0.78rem;
+  padding: 7px 34px;
+  border: 1.5px solid var(--border);
   border-radius: 12px;
   background-color: var(--surface);
   color: var(--title-color);
   height: auto;
   width: 100%;
+  cursor: pointer;
   transition: border-color 0.15s ease, background-color 0.15s ease;
 }
 
+.contenedor-select.select-activo .select-categorias {
+  border-color: transparent;
+  background:
+    linear-gradient(var(--surface-alt), var(--surface-alt)) padding-box,
+    var(--app-gradient) border-box;
+}
+
 .select-categorias:focus {
-  border-color: var(--blue);
+  border-color: var(--focus-border);
+}
+
+.contenedor-select.select-activo .select-categorias:focus {
+  border-color: transparent;
 }
 
 .select-categorias option,
@@ -1271,7 +1338,7 @@ select:focus,
 
 .input-buscador:focus,
 .input-peso:focus {
-  border-color: var(--blue);
+  border-color: var(--focus-border);
 }
 
 .contenedor-peso {
@@ -1381,6 +1448,120 @@ select:focus,
   background-color: var(--hover-bg);
 }
 
+.vista-toggle-bar {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 6px;
+  margin-bottom: 0.5rem;
+}
+
+.contenedor0 .tabla-actions-bar {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 6px;
+  margin-bottom: 0.5rem;
+}
+
+.contenedor0 .tabla-actions-bar.modo-manual {
+  grid-template-columns: 1fr;
+}
+
+.vista-toggle-bar button,
+.contenedor0 .tabla-actions-bar button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  width: 100%;
+  min-width: 0;
+  margin: 0;
+  padding: 7px 6px;
+  background-color: var(--surface);
+  color: var(--title-color);
+  border: 1.5px solid var(--border);
+  border-radius: 12px;
+  font-size: 0.76rem;
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  transition: background-color 0.2s ease, border-color 0.15s ease, color 0.15s ease, opacity 0.15s ease;
+}
+
+.vista-toggle-bar button:hover {
+  background-color: var(--hover-bg);
+}
+
+.vista-toggle-bar button .material-symbols-outlined,
+.contenedor0 .tabla-actions-bar button .material-symbols-outlined,
+.contenedor0 button.btn-compartir .material-symbols-outlined {
+  font-size: 16px;
+  width: 16px;
+  height: 16px;
+  line-height: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.vista-toggle-bar button .btn-label,
+.contenedor0 .tabla-actions-bar button .btn-label,
+.contenedor0 button.btn-compartir .btn-label {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.vista-toggle-bar button.vista-btn-activo,
+.contenedor0 .tabla-actions-bar button.vista-btn-activo {
+  border-color: transparent;
+  color: var(--title-color);
+  background:
+    linear-gradient(var(--surface-alt), var(--surface-alt)) padding-box,
+    var(--app-gradient) border-box;
+}
+
+.vista-toggle-bar button.vista-btn-activo:hover,
+.contenedor0 .tabla-actions-bar button.vista-btn-activo:hover {
+  background:
+    linear-gradient(var(--hover-bg), var(--hover-bg)) padding-box,
+    var(--app-gradient) border-box;
+}
+
+.vista-toggle-bar button.vista-btn-activo .material-symbols-outlined,
+.contenedor0 .tabla-actions-bar button.vista-btn-activo .material-symbols-outlined {
+  color: inherit;
+}
+
+.vista-toggle-bar button.vista-btn-inactivo,
+.contenedor0 .tabla-actions-bar button.vista-btn-inactivo {
+  color: var(--text-secondary);
+  opacity: 0.8;
+}
+
+.contenedor0 .tabla-actions-bar button:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+.contenedor0 button.btn-compartir {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  width: 100%;
+  margin: 0.25rem 0 0 0;
+  padding: 8px 12px;
+  border: 1.5px solid var(--border);
+  font-size: 0.78rem;
+  font-weight: 600;
+}
+
+.contenedor0 button.btn-compartir .material-symbols-outlined {
+  color: inherit;
+}
+
 /* =====================================
    7. MODALES Y TOASTS (ADAPTADOS A TEMA)
    ================================== */
@@ -1436,7 +1617,7 @@ select:focus,
 }
 
 #alerta-aceptar {
-  color: var(--blue);
+  color: var(--title-color);
 }
 
 #alerta-cancelar {
@@ -1478,6 +1659,18 @@ select:focus,
   display: none;
 }
 
+.nombre-nutriente button {
+  all: unset;
+  display: block;
+  width: 100%;
+  text-align: left;
+  cursor: pointer;
+  line-height: inherit;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
 .nombre-nutriente:hover {
   text-decoration: underline;
 }
@@ -1489,6 +1682,13 @@ select:focus,
 
 .sin-scrollbar::-webkit-scrollbar {
   display: none;
+}
+
+.lista-comida-scroll table th,
+.lista-comida-scroll table td {
+  height: 30px;
+  padding-top: 0;
+  padding-bottom: 0;
 }
 
 td:has(.btn-eliminar-item) {
@@ -1533,13 +1733,16 @@ table td > div[contenteditable="true"] {
   border-radius: 12px;
   color: var(--title-color);
   outline: none;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 table td:has([contenteditable="true"]):focus-within,
 table td:has(> .select-editor):focus-within {
   background: var(--surface);
-  border-color: var(--blue);
-  box-shadow: inset 0 0 0 1px var(--blue);
+  border-color: var(--focus-border);
+  box-shadow: inset 0 0 0 1px var(--focus-border);
 }
 
 .right-summary-box {

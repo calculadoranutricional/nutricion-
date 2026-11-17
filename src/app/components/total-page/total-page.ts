@@ -30,27 +30,45 @@ import { NutrientTable } from '../nutrient-table/nutrient-table';
           </p>
         }
 
-        <div class="contenedor0">
+        <div class="vista-toggle-bar">
           <button
             type="button"
             id="btn-grafico-total"
+            [class.vista-btn-activo]="graficoVisible()"
+            [class.vista-btn-inactivo]="!graficoVisible()"
+            [attr.aria-pressed]="graficoVisible()"
+            [attr.aria-label]="graficoVisible() ? 'Ocultar gráfico' : 'Mostrar gráfico'"
+            [title]="graficoVisible() ? 'Ocultar gráfico' : 'Mostrar gráfico'"
             (click)="toggleGrafico()"
           >
-            {{ graficoVisible() ? 'Ocultar gráfico' : 'Mostrar gráfico' }}
+            <span class="material-symbols-outlined" aria-hidden="true">donut_large</span>
+            <span class="btn-label">Gráfico</span>
           </button>
           <button
             type="button"
             id="btn-seccion-total"
+            [class.vista-btn-inactivo]="!graficoVisible() && !tablaVisible()"
+            [attr.aria-label]="!graficoVisible() && !tablaVisible() ? 'Mostrar gráfico y tablas' : 'Ocultar gráfico y tablas'"
+            [title]="!graficoVisible() && !tablaVisible() ? 'Mostrar gráfico y tablas' : 'Ocultar gráfico y tablas'"
             (click)="toggleSeccion()"
           >
-            Gráfico-Tablas
+            <span class="material-symbols-outlined" aria-hidden="true">
+              {{ !graficoVisible() && !tablaVisible() ? 'visibility' : 'visibility_off' }}
+            </span>
+            <span class="btn-label">Todo</span>
           </button>
           <button
             type="button"
             id="btn-tabla-total"
+            [class.vista-btn-activo]="tablaVisible()"
+            [class.vista-btn-inactivo]="!tablaVisible()"
+            [attr.aria-pressed]="tablaVisible()"
+            [attr.aria-label]="tablaLabel()"
+            [title]="tablaLabel()"
             (click)="toggleTabla()"
           >
-            {{ tablaLabel() }}
+            <span class="material-symbols-outlined" aria-hidden="true">table_chart</span>
+            <span class="btn-label">Tablas</span>
           </button>
         </div>
 
@@ -80,7 +98,8 @@ import { NutrientTable } from '../nutrient-table/nutrient-table';
             />
           </div>
           <button type="button" class="btn-compartir" (click)="compartirResultados()">
-            Compartir resultados
+            <span class="material-symbols-outlined" aria-hidden="true">share</span>
+            <span class="btn-label">Compartir</span>
           </button>
         </div>
       </div>

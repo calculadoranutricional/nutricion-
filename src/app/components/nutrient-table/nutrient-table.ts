@@ -52,7 +52,6 @@ interface TablaCategoria {
                   <button
                     type="button"
                     (click)="toggleDescripcion(fila.nombre!)"
-                    style="all:unset;display:block;width:100%;text-align:left;cursor:pointer;line-height:inherit;"
                   >
                     {{ fila.nombre }}
                   </button>
