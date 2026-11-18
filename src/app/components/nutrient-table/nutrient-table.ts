@@ -52,7 +52,6 @@ interface TablaCategoria {
                   <button
                     type="button"
                     (click)="toggleDescripcion(fila.nombre!)"
-                    style="all:unset;display:block;width:100%;text-align:left;cursor:pointer;line-height:inherit;"
                   >
                     {{ fila.nombre }}
                   </button>
@@ -122,7 +121,7 @@ export class NutrientTable {
               if (esTotal) {
                 color = colorPorcentajeVDR(p, 100, true);
               } else {
-                const obj = dist[comida] || 25;
+                const obj = dist[comida] ?? 25;
                 color = colorPorcentajeVDR(p, obj, false);
               }
             }

@@ -9,12 +9,12 @@ import {
   PLATFORM_ID,
   viewChild,
 } from '@angular/core';
-import { COLORES_VDR, NUTRIENTES, NUTRIENTES_PLANOS } from '../../data/nutrients.data';
+import { NUTRIENTES, NUTRIENTES_PLANOS } from '../../data/nutrients.data';
 import { EditableInput } from '../../directives/editable-input';
 import { NutrienteInfo } from '../../models/nutrition.model';
 import { NutritionStore } from '../../services/nutrition-store';
 import { UiOverlay } from '../../services/ui-overlay';
-import { CONVERSIONES, convertir, tipoUnidad } from '../../utils/nutrition.utils';
+import { colorPorcentajeVDR, CONVERSIONES, convertir, tipoUnidad } from '../../utils/nutrition.utils';
 
 interface FilaEditor {
   tipo: 'subtitulo' | 'nutriente';
@@ -139,14 +139,8 @@ export class ManualEditor {
           const porc = base ? ((total / base) * 100).toFixed(1) : '0.0';
           const pNum = parseFloat(porc);
 
-          const obj = dist[comidaReal] || 25;
-          const m = obj * 0.05;
-          const col =
-            pNum >= obj - m && pNum <= obj + m
-              ? COLORES_VDR.verde
-              : (pNum >= obj - 2 * m && pNum < obj - m) || (pNum > obj + m && pNum <= obj + 2 * m)
-                ? COLORES_VDR.amarillo
-                : COLORES_VDR.rojo;
+          const obj = dist[comidaReal] ?? 25;
+          const col = colorPorcentajeVDR(pNum, obj, false);
 
           const tipoOrig = tipoUnidad(n.unidad);
           let unidades: string[] = [];

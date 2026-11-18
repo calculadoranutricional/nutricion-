@@ -21,6 +21,7 @@ import { TotalSection } from './components/total-section/total-section';
 import { VdrPanel } from './components/vdr-panel/vdr-panel';
 import { COMIDAS } from './data/nutrients.data';
 import { DrawerController } from './services/drawer-controller';
+import { NutritionStore } from './services/nutrition-store';
 import { UiOverlay } from './services/ui-overlay';
 
 @Component({
@@ -45,6 +46,7 @@ import { UiOverlay } from './services/ui-overlay';
 export class App {
   readonly ui = inject(UiOverlay);
   readonly drawer = inject(DrawerController);
+  readonly store = inject(NutritionStore);
   private readonly platformId = inject(PLATFORM_ID);
 
   readonly comidas = COMIDAS;

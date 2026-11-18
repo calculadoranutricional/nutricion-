@@ -2,6 +2,11 @@ import { ChangeDetectionStrategy, Component, computed, inject, input } from '@an
 import { DISTRIBUCION_VDR_BASE, VDR_BASE } from '../../data/nutrients.data';
 import { NutritionStore } from '../../services/nutrition-store';
 import { UiOverlay } from '../../services/ui-overlay';
+import {
+  calcularProporcionesBarraVDR,
+  colorPorcentajeVDR,
+  formatMacroValor,
+} from '../../utils/nutrition.utils';
 
 const MEAL_META: Record<string, { colorClass: string; icon: string }> = {
   Desayuno: { colorClass: 'blue', icon: 'bakery_dining' },
@@ -27,7 +32,7 @@ const MEAL_META: Record<string, { colorClass: string; icon: string }> = {
       <div class="card-icon">
         <span class="material-symbols-outlined">{{ iconoComida() }}</span>
       </div>
-      <span class="percentage">{{ porcentajeVdrDisplay() }}%</span>
+      <span class="percentage" [style.color]="porcentajeColor()">{{ porcentajeVdrDisplay() }}%</span>
     </div>
     <h2>{{ comida() }}</h2>
     <div class="kcal-row">
@@ -43,21 +48,30 @@ const MEAL_META: Record<string, { colorClass: string; icon: string }> = {
     </div>
     <div class="summary-grid">
       <div class="summary-item">
-        <strong>{{ proteinaDisplay() }}g</strong>
+        <div class="summary-value">
+          <strong>{{ proteinaDisplay() }}</strong>
+          <span class="macro-target">/ {{ proteinaObjetivoDisplay() }}g</span>
+        </div>
         <span class="summary-label">
           <span class="color-key key-red" aria-hidden="true"></span>
           <span>Proteína</span>
         </span>
       </div>
       <div class="summary-item">
-        <strong>{{ carbosDisplay() }}g</strong>
+        <div class="summary-value">
+          <strong>{{ carbosDisplay() }}</strong>
+          <span class="macro-target">/ {{ carbosObjetivoDisplay() }}g</span>
+        </div>
         <span class="summary-label">
           <span class="color-key key-yellow" aria-hidden="true"></span>
           <span>Carbos</span>
         </span>
       </div>
       <div class="summary-item">
-        <strong>{{ grasasDisplay() }}g</strong>
+        <div class="summary-value">
+          <strong>{{ grasasDisplay() }}</strong>
+          <span class="macro-target">/ {{ grasasObjetivoDisplay() }}g</span>
+        </div>
         <span class="summary-label">
           <span class="color-key key-green" aria-hidden="true"></span>
           <span>Grasas</span>
@@ -103,7 +117,7 @@ export class MealSection {
   });
 
   readonly kcalObjetivo = computed(() => {
-    const baseEnergia = this.vdr()['Energía'] || 2000;
+    const baseEnergia = this.vdr()['Energía'] || 0;
     const pct = this.distribucionVdr()[this.comida()] ?? 25;
     return Math.round((baseEnergia * pct) / 100);
   });
@@ -122,53 +136,46 @@ export class MealSection {
     return ((this.kcalConsumidas() / base) * 100).toFixed(1);
   });
 
-  readonly proteinaDisplay = computed(() => this.formatMacro(Number(this.totales()['Proteínas']) || 0));
-  readonly carbosDisplay = computed(() =>
-    this.formatMacro(Number(this.totales()['Carbohidratos']) || 0),
-  );
-  readonly grasasDisplay = computed(() =>
-    this.formatMacro(Number(this.totales()['Grasas totales']) || 0),
-  );
-
-  readonly progressWidths = computed(() => {
-    const kcal = this.kcalConsumidas();
-    const protKcal = (Number(this.totales()['Proteínas']) || 0) * 4;
-    const carbKcal = (Number(this.totales()['Carbohidratos']) || 0) * 4;
-    const fatKcal = (Number(this.totales()['Grasas totales']) || 0) * 9;
-    const macroSum = protKcal + carbKcal + fatKcal;
-
-    if (kcal <= 0 && macroSum <= 0) {
-      return { blue: 0, red: 0, yellow: 0, green: 0 };
-    }
-
-    const objetivo = Math.max(1, this.kcalObjetivo());
-    const efectivo = kcal > 0 ? kcal : macroSum;
-    const totalFill = Math.min(100, (efectivo / objetivo) * 100);
-    const blue = totalFill * 0.25;
-    const macroBudget = totalFill * 0.75;
-
-    if (macroSum <= 0) {
-      return {
-        blue,
-        red: macroBudget / 3,
-        yellow: macroBudget / 3,
-        green: macroBudget / 3,
-      };
-    }
-
-    return {
-      blue,
-      red: (macroBudget * protKcal) / macroSum,
-      yellow: (macroBudget * carbKcal) / macroSum,
-      green: (macroBudget * fatKcal) / macroSum,
-    };
+  readonly porcentajeVdr = computed(() => {
+    return parseFloat(this.porcentajeVdrDisplay()) || 0;
   });
 
-  private formatMacro(val: number): string {
-    if (val === 0) return '0';
-    if (val < 10) return val.toFixed(1);
-    return String(Math.round(val));
-  }
+  readonly porcentajeColor = computed(() => {
+    const obj = this.distribucionVdr()[this.comida()] ?? 25;
+    return colorPorcentajeVDR(this.porcentajeVdr(), obj, false);
+  });
+
+  readonly proteinaDisplay = computed(() =>
+    formatMacroValor(Number(this.totales()['Proteínas']) || 0),
+  );
+  readonly carbosDisplay = computed(() =>
+    formatMacroValor(Number(this.totales()['Carbohidratos']) || 0),
+  );
+  readonly grasasDisplay = computed(() =>
+    formatMacroValor(Number(this.totales()['Grasas totales']) || 0),
+  );
+
+  readonly proteinaObjetivoDisplay = computed(() => {
+    const base = this.vdr()['Proteínas'] || 0;
+    const pct = this.distribucionVdr()[this.comida()] ?? 25;
+    return formatMacroValor((base * pct) / 100);
+  });
+
+  readonly carbosObjetivoDisplay = computed(() => {
+    const base = this.vdr()['Carbohidratos'] || 0;
+    const pct = this.distribucionVdr()[this.comida()] ?? 25;
+    return formatMacroValor((base * pct) / 100);
+  });
+
+  readonly grasasObjetivoDisplay = computed(() => {
+    const base = this.vdr()['Grasas totales'] || 0;
+    const pct = this.distribucionVdr()[this.comida()] ?? 25;
+    return formatMacroValor((base * pct) / 100);
+  });
+
+  readonly progressWidths = computed(() => {
+    return calcularProporcionesBarraVDR(this.totales(), this.vdr(), this.kcalObjetivo());
+  });
 
   abrirPagina(): void {
     this.ui.openMealPage(this.comida());

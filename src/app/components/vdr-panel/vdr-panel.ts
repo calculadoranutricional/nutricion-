@@ -2,8 +2,10 @@ import {
   ChangeDetectionStrategy,
   Component,
   computed,
+  effect,
   ElementRef,
   inject,
+  signal,
   viewChild,
 } from '@angular/core';
 import { NUTRIENTES, VDR_BASE } from '../../data/nutrients.data';
@@ -82,10 +84,14 @@ interface VdrSeccion {
                             [attr.data-nutriente]="n.nombre"
                             class="input-editor"
                             placeholder="0.00"
+                            (input)="onValorInput($event, n.nombre)"
+                            (paste)="onValorPaste($event, n.nombre)"
                           >{{ displayValor(n.nombre) }}</div>
                         </td>
                         <td>{{ n.unidad }}</td>
-                        <td style="color:var(--green)">100%</td>
+                        <td [style.color]="tieneValor(n.nombre) ? 'var(--green)' : 'var(--text-secondary)'">
+                          {{ tieneValor(n.nombre) ? '100%' : '0.0%' }}
+                        </td>
                       </tr>
                     }
                   }
@@ -109,6 +115,16 @@ export class VdrPanel {
   readonly userVdr = computed(() => {
     return this.store.vdr() || VDR_BASE;
   });
+
+  readonly vdrDraft = signal<Record<string, number>>({});
+
+  constructor() {
+    effect(() => {
+      if (this.ui.activePanel() === 'panel') {
+        this.vdrDraft.set({ ...this.userVdr() });
+      }
+    });
+  }
 
   private construirSecciones(): VdrSeccion[] {
     const res: VdrSeccion[] = [];
@@ -136,7 +152,28 @@ export class VdrPanel {
 
   displayValor(nombre: string): string {
     const valor = this.userVdr()[nombre];
-    return typeof valor === 'number' ? String(valor) : '';
+    return typeof valor === 'number' && valor > 0 ? String(valor) : '';
+  }
+
+  tieneValor(nombre: string): boolean {
+    const valor = this.vdrDraft()[nombre];
+    return typeof valor === 'number' && valor > 0;
+  }
+
+  onValorInput(event: Event, nombre: string): void {
+    const target = event.target as HTMLElement;
+    const limpio = (target.textContent || '').replace(/[^0-9]/g, '').slice(0, 4);
+    const valor = limpio ? parseInt(limpio, 10) : 0;
+    this.vdrDraft.update((prev) => ({ ...prev, [nombre]: valor }));
+  }
+
+  onValorPaste(event: Event, nombre: string): void {
+    const target = event.target as HTMLElement;
+    setTimeout(() => {
+      const limpio = (target.textContent || '').replace(/[^0-9]/g, '').slice(0, 4);
+      const valor = limpio ? parseInt(limpio, 10) : 0;
+      this.vdrDraft.update((prev) => ({ ...prev, [nombre]: valor }));
+    }, 0);
   }
 
   enfocarCelda(event: MouseEvent): void {
@@ -163,7 +200,7 @@ export class VdrPanel {
               const nombre = div.dataset['nutriente'];
               const texto = (div.textContent || '').trim();
               const valor = parseFloat(texto);
-              if (nombre && !isNaN(valor)) {
+              if (nombre && !isNaN(valor) && valor > 0) {
                 nuevoVdr[nombre] = valor;
               }
             });

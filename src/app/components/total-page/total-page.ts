@@ -20,7 +20,7 @@ import { NutrientTable } from '../nutrient-table/nutrient-table';
     <div id="total-page" class="full-page-overlay">
       <div class="barra">
         <button type="button" class="icon-button cerrar" aria-label="Cerrar" (click)="cerrar()">×</button>
-        <h3>Resumen Total</h3>
+        <h3>Resumen total</h3>
       </div>
 
       <div class="full-page-body" id="total-body">
@@ -30,45 +30,74 @@ import { NutrientTable } from '../nutrient-table/nutrient-table';
           </p>
         }
 
-        <div class="contenedor0">
+        <div class="vista-toggle-bar">
           <button
             type="button"
             id="btn-grafico-total"
+            [class.vista-btn-activo]="graficoVisible()"
+            [class.vista-btn-inactivo]="!graficoVisible()"
+            [attr.aria-pressed]="graficoVisible()"
+            [attr.aria-label]="graficoVisible() ? 'Ocultar gráfico' : 'Mostrar gráfico'"
+            [title]="graficoVisible() ? 'Ocultar gráfico' : 'Mostrar gráfico'"
             (click)="toggleGrafico()"
           >
-            {{ graficoVisible() ? 'Ocultar gráfico' : 'Mostrar gráfico' }}
+            <span class="material-symbols-outlined" aria-hidden="true">donut_large</span>
+            <span class="btn-label">Gráfico</span>
           </button>
           <button
             type="button"
             id="btn-seccion-total"
+            [class.vista-btn-inactivo]="!graficoVisible() && !tablaVisible()"
+            [attr.aria-label]="!graficoVisible() && !tablaVisible() ? 'Mostrar gráfico y tablas' : 'Ocultar gráfico y tablas'"
+            [title]="!graficoVisible() && !tablaVisible() ? 'Mostrar gráfico y tablas' : 'Ocultar gráfico y tablas'"
             (click)="toggleSeccion()"
           >
-            Gráfico-Tablas
+            <span class="material-symbols-outlined" aria-hidden="true">
+              {{ !graficoVisible() && !tablaVisible() ? 'visibility' : 'visibility_off' }}
+            </span>
+            <span class="btn-label">Todo</span>
           </button>
           <button
             type="button"
             id="btn-tabla-total"
+            [class.vista-btn-activo]="tablaVisible()"
+            [class.vista-btn-inactivo]="!tablaVisible()"
+            [attr.aria-pressed]="tablaVisible()"
+            [attr.aria-label]="tablaLabel()"
+            [title]="tablaLabel()"
             (click)="toggleTabla()"
           >
-            {{ tablaLabel() }}
+            <span class="material-symbols-outlined" aria-hidden="true">table_chart</span>
+            <span class="btn-label">Tablas</span>
           </button>
         </div>
 
-        <div id="seccion0-total" [class.hidden]="!graficoVisible()">
-          <h4 id="titulo-grafico-total">Gráfico Nutricional</h4>
+        <section id="seccion0-total" class="seccion-card meal-accent-multi" [class.hidden]="!graficoVisible()">
+          <div class="seccion-card-header">
+            <span class="seccion-card-title seccion-card-title-with-icon">
+              <span class="material-symbols-outlined seccion-meal-icon google-gradient" aria-hidden="true">fact_check</span>
+              <span id="titulo-grafico-total">Gráfico Nutricional</span>
+            </span>
+          </div>
           <app-donut-chart
             chartKey="total"
             [totales]="totales()"
+            [vdr]="vdr()"
             [visible]="graficoVisible()"
           />
-        </div>
+        </section>
 
-        <div
+        <section
           id="seccion1-total"
-          class="contenedor0"
+          class="contenedor0 seccion-card meal-accent-multi"
           [class.hidden]="!tablaVisible()"
         >
-          <h4>Tabla Nutricional</h4>
+          <div class="seccion-card-header">
+            <span class="seccion-card-title seccion-card-title-with-icon">
+              <span class="material-symbols-outlined seccion-meal-icon google-gradient" aria-hidden="true">fact_check</span>
+              <span>Tabla Nutricional</span>
+            </span>
+          </div>
           <div id="tabla-total">
             <app-nutrient-table
               [totales]="totales()"
@@ -79,9 +108,10 @@ import { NutrientTable } from '../nutrient-table/nutrient-table';
             />
           </div>
           <button type="button" class="btn-compartir" (click)="compartirResultados()">
-            Compartir resultados
+            <span class="material-symbols-outlined" aria-hidden="true">share</span>
+            <span class="btn-label">Compartir</span>
           </button>
-        </div>
+        </section>
       </div>
     </div>
   `,
