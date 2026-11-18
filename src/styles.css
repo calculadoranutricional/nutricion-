@@ -11,16 +11,28 @@
   --bg: #ffffff;
   --menu-bg: #ffffff;
   --menu-border: #d9dde2;
-  --surface: #f8f9fa;
-  --surface-alt: #eef1f4;
-  --card-bg: #f9fafb;
+  --surface: #f5f6f8;
+  --surface-alt: #eceff3;
+  --card-bg: #ffffff;
   --text: #5f6368;
   --title-color: #545961;
   --app-title-color: #000000;
   --text-secondary: #70757d;
-  --border: #cfd5dd;
-  --hover-bg: #eef1f4;
-  --focus-border: #5f6368;
+  --border: #dadfe6;
+  --hover-bg: #f1f3f4;
+  --focus-border: var(--border);
+  --focus-ring: none;
+  --card-control-bg: var(--bg);
+  --toggle-btn-bg: var(--bg);
+  --active-btn-bg: var(--hover-bg);
+  --active-btn-border: var(--border);
+  --select-focus-bg: var(--hover-bg);
+  --cell-bg: var(--bg);
+  --th-bg: #e5e9ef;
+  --cat-bg: #eef1f5;
+  --subcat-bg: #f6f8fa;
+  --cell-focus-bg: var(--hover-bg);
+  --cell-focus-shadow: none;
   --app-gradient: linear-gradient(90deg, var(--blue), var(--red), var(--yellow), var(--green));
   --app-icon-gradient: linear-gradient(135deg, var(--blue) 15%, var(--red) 40%, var(--yellow) 65%, var(--green) 88%);
 }
@@ -43,7 +55,9 @@
     --text-secondary: #a8a8a8;
     --border: #474747;
     --hover-bg: #383838;
-    --focus-border: #a8a8a8;
+    --th-bg: #3a3a3a;
+    --cat-bg: #303030;
+    --subcat-bg: #262626;
   }
 }
 
@@ -910,6 +924,118 @@ app-total-section {
   font-size: 14px;
 }
 
+.seccion-card {
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 12px 14px;
+  margin-bottom: 0.75rem;
+}
+
+.seccion-card:last-child {
+  margin-bottom: 0;
+}
+
+.seccion-card-carga {
+  margin-bottom: 0;
+}
+
+.seccion-card.meal-accent-blue {
+  --meal-accent: var(--blue);
+  border-top: 4px solid var(--blue);
+}
+
+.seccion-card.meal-accent-red {
+  --meal-accent: var(--red);
+  border-top: 4px solid var(--red);
+}
+
+.seccion-card.meal-accent-yellow {
+  --meal-accent: var(--yellow);
+  border-top: 4px solid var(--yellow);
+}
+
+.seccion-card.meal-accent-green {
+  --meal-accent: var(--green);
+  border-top: 4px solid var(--green);
+}
+
+.seccion-card.meal-accent-multi {
+  border: 1px solid transparent;
+  border-top-width: 4px;
+  background:
+    linear-gradient(var(--card-bg), var(--card-bg)) padding-box,
+    linear-gradient(to bottom, transparent 4px, var(--border) 4px) border-box,
+    var(--app-gradient) border-box;
+}
+
+.seccion-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 0.6rem;
+}
+
+.seccion-card-title {
+  margin: 0;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--text-secondary);
+  text-align: left;
+}
+
+.seccion-card-title-with-icon {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.seccion-meal-icon {
+  font-size: 16px;
+  width: 16px;
+  height: 16px;
+  line-height: 1;
+  color: var(--meal-accent, var(--title-color));
+}
+
+.full-page-body .seccion-card-heading {
+  margin: 0 0 0.6rem 0;
+  text-align: center;
+  font-size: 13.5px;
+  font-weight: 700;
+  color: var(--title-color);
+}
+
+.seccion-card-count {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  font-variant-numeric: tabular-nums;
+}
+
+.seccion-card .select-categorias,
+.seccion-card .input-buscador,
+.seccion-card .input-peso,
+.seccion-card button.btn-compartir {
+  background-color: var(--card-control-bg);
+}
+
+.seccion-card .tabla-actions-bar button {
+  background-color: var(--bg);
+}
+
+.seccion-card .contenedor-buscador,
+.seccion-card .contenedor-peso {
+  margin-bottom: 0;
+}
+
+.seccion-card .lista-comida-scroll {
+  margin-top: 0.55rem;
+}
+
 table {
   width: 100%;
   font-size: 0.78rem;
@@ -918,12 +1044,11 @@ table {
   border-spacing: 0;
   overflow: hidden;
   table-layout: fixed;
-  background: var(--bg);
+  background: transparent;
 }
 
 table thead {
-  background: var(--surface-alt);
-  border-bottom: 1px solid var(--border);
+  background: transparent;
   border-spacing: 0;
 }
 
@@ -942,10 +1067,14 @@ table td {
   font-variant-numeric: tabular-nums;
 }
 
+table td {
+  background: var(--cell-bg);
+}
+
 table th {
   font-weight: 700;
   color: var(--title-color);
-  background: var(--surface-alt);
+  background: var(--th-bg);
 }
 
 table th:nth-child(1),
@@ -987,18 +1116,19 @@ table td.tabla-subcategoria {
 }
 
 table td.tabla-categoria {
-  background: var(--surface);
+  background: var(--cat-bg);
   font-weight: 700;
   font-size: 0.8rem;
 }
 
 table td.tabla-subcategoria {
-  background: var(--surface-alt);
+  background: var(--subcat-bg);
   font-weight: 600;
   font-size: 0.78rem;
 }
 
 table tr.descripcion-nutriente td {
+  width: auto;
   white-space: normal;
   overflow: visible;
   text-overflow: clip;
@@ -1253,22 +1383,26 @@ button.transparente {
   height: auto;
   width: 100%;
   cursor: pointer;
-  transition: border-color 0.15s ease, background-color 0.15s ease;
+  transition: border-color 0.15s ease, background-color 0.15s ease, box-shadow 0.15s ease;
 }
 
 .contenedor-select.select-activo .select-categorias {
-  border-color: transparent;
-  background:
-    linear-gradient(var(--surface-alt), var(--surface-alt)) padding-box,
-    var(--app-gradient) border-box;
+  border-color: var(--active-btn-border);
+  background-color: var(--active-btn-bg);
 }
 
+.select-categorias:hover,
 .select-categorias:focus {
   border-color: var(--focus-border);
+  background-color: var(--select-focus-bg);
+  box-shadow: var(--focus-ring);
 }
 
+.contenedor-select.select-activo .select-categorias:hover,
 .contenedor-select.select-activo .select-categorias:focus {
-  border-color: transparent;
+  border-color: var(--active-btn-border);
+  background-color: var(--active-btn-bg);
+  box-shadow: var(--focus-ring);
 }
 
 .select-categorias option,
@@ -1333,12 +1467,13 @@ select:focus,
   background: var(--surface);
   color: var(--title-color);
   width: 100%;
-  transition: border-color 0.15s ease, background-color 0.15s ease;
+  transition: border-color 0.15s ease, background-color 0.15s ease, box-shadow 0.15s ease;
 }
 
 .input-buscador:focus,
 .input-peso:focus {
   border-color: var(--focus-border);
+  box-shadow: var(--focus-ring);
 }
 
 .contenedor-peso {
@@ -1371,7 +1506,7 @@ select:focus,
   background: var(--surface);
   color: var(--title-color);
   width: 100%;
-  transition: border-color 0.15s ease, background-color 0.15s ease;
+  transition: border-color 0.15s ease, background-color 0.15s ease, box-shadow 0.15s ease;
 }
 
 .sugerencias-lista {
@@ -1452,7 +1587,7 @@ select:focus,
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 6px;
-  margin-bottom: 0.5rem;
+  margin: 0.75rem 0;
 }
 
 .contenedor0 .tabla-actions-bar {
@@ -1476,7 +1611,7 @@ select:focus,
   min-width: 0;
   margin: 0;
   padding: 7px 6px;
-  background-color: var(--surface);
+  background-color: var(--toggle-btn-bg);
   color: var(--title-color);
   border: 1.5px solid var(--border);
   border-radius: 12px;
@@ -1484,10 +1619,11 @@ select:focus,
   font-weight: 600;
   white-space: nowrap;
   overflow: hidden;
-  transition: background-color 0.2s ease, border-color 0.15s ease, color 0.15s ease, opacity 0.15s ease;
+  transition: background-color 0.2s ease, border-color 0.15s ease, color 0.15s ease, opacity 0.15s ease, box-shadow 0.15s ease;
 }
 
-.vista-toggle-bar button:hover {
+.vista-toggle-bar button:hover,
+.contenedor0 .tabla-actions-bar button:hover {
   background-color: var(--hover-bg);
 }
 
@@ -1514,18 +1650,17 @@ select:focus,
 
 .vista-toggle-bar button.vista-btn-activo,
 .contenedor0 .tabla-actions-bar button.vista-btn-activo {
-  border-color: transparent;
+  border-color: var(--active-btn-border);
   color: var(--title-color);
-  background:
-    linear-gradient(var(--surface-alt), var(--surface-alt)) padding-box,
-    var(--app-gradient) border-box;
+  background-color: var(--active-btn-bg);
+  box-shadow: var(--focus-ring);
 }
 
 .vista-toggle-bar button.vista-btn-activo:hover,
 .contenedor0 .tabla-actions-bar button.vista-btn-activo:hover {
-  background:
-    linear-gradient(var(--hover-bg), var(--hover-bg)) padding-box,
-    var(--app-gradient) border-box;
+  border-color: var(--active-btn-border);
+  background-color: var(--hover-bg);
+  box-shadow: var(--focus-ring);
 }
 
 .vista-toggle-bar button.vista-btn-activo .material-symbols-outlined,
@@ -1560,6 +1695,65 @@ select:focus,
 
 .contenedor0 button.btn-compartir .material-symbols-outlined {
   color: inherit;
+}
+
+.donut-chart-wrapper {
+  width: 100%;
+  max-width: 420px;
+  margin: 0 auto;
+}
+
+.donut-canvas-wrap {
+  width: 100%;
+  max-width: 240px;
+  margin: 4px auto;
+}
+
+.donut-corners-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  width: 100%;
+}
+
+.donut-corners-row button.donut-legend-item {
+  display: inline-flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 6px;
+  width: auto;
+  max-width: 48%;
+  min-width: 0;
+  margin: 0;
+  padding: 4px 6px;
+  border: none;
+  border-radius: 8px;
+  background-color: transparent;
+  color: var(--title-color);
+  font-family: inherit;
+  font-size: 11.5px;
+  font-weight: 600;
+  text-align: left;
+  transition: opacity 0.15s ease, background-color 0.15s ease;
+}
+
+.donut-corners-row button.donut-legend-item:hover {
+  background-color: var(--hover-bg);
+}
+
+.donut-corners-row button.donut-legend-item.is-hidden {
+  opacity: 0.45;
+}
+
+.donut-corners-row button.donut-legend-item.is-hidden .donut-legend-label {
+  text-decoration: line-through;
+}
+
+.donut-legend-label {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 /* =====================================
@@ -1659,10 +1853,17 @@ select:focus,
   display: none;
 }
 
+table td.nombre-nutriente {
+  padding: 0;
+}
+
 .nombre-nutriente button {
   all: unset;
+  box-sizing: border-box;
   display: block;
   width: 100%;
+  padding: 5px 6px;
+  border-radius: 12px;
   text-align: left;
   cursor: pointer;
   line-height: inherit;
@@ -1671,8 +1872,13 @@ select:focus,
   text-overflow: ellipsis;
 }
 
-.nombre-nutriente:hover {
+table td.nombre-nutriente button:hover {
+  background-color: transparent;
   text-decoration: underline;
+}
+
+table td.nombre-nutriente:hover {
+  background-color: var(--hover-bg);
 }
 
 .sin-scrollbar {
@@ -1740,9 +1946,9 @@ table td > div[contenteditable="true"] {
 
 table td:has([contenteditable="true"]):focus-within,
 table td:has(> .select-editor):focus-within {
-  background: var(--surface);
+  background: var(--cell-focus-bg);
   border-color: var(--focus-border);
-  box-shadow: inset 0 0 0 1px var(--focus-border);
+  box-shadow: var(--cell-focus-shadow);
 }
 
 .right-summary-box {

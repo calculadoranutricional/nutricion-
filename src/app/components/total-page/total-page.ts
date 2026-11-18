@@ -72,22 +72,32 @@ import { NutrientTable } from '../nutrient-table/nutrient-table';
           </button>
         </div>
 
-        <div id="seccion0-total" [class.hidden]="!graficoVisible()">
-          <h4 id="titulo-grafico-total">Gráfico Nutricional</h4>
+        <section id="seccion0-total" class="seccion-card meal-accent-multi" [class.hidden]="!graficoVisible()">
+          <div class="seccion-card-header">
+            <span class="seccion-card-title seccion-card-title-with-icon">
+              <span class="material-symbols-outlined seccion-meal-icon google-gradient" aria-hidden="true">fact_check</span>
+              <span id="titulo-grafico-total">Gráfico Nutricional</span>
+            </span>
+          </div>
           <app-donut-chart
             chartKey="total"
             [totales]="totales()"
             [vdr]="vdr()"
             [visible]="graficoVisible()"
           />
-        </div>
+        </section>
 
-        <div
+        <section
           id="seccion1-total"
-          class="contenedor0"
+          class="contenedor0 seccion-card meal-accent-multi"
           [class.hidden]="!tablaVisible()"
         >
-          <h4>Tabla Nutricional</h4>
+          <div class="seccion-card-header">
+            <span class="seccion-card-title seccion-card-title-with-icon">
+              <span class="material-symbols-outlined seccion-meal-icon google-gradient" aria-hidden="true">fact_check</span>
+              <span>Tabla Nutricional</span>
+            </span>
+          </div>
           <div id="tabla-total">
             <app-nutrient-table
               [totales]="totales()"
@@ -101,7 +111,7 @@ import { NutrientTable } from '../nutrient-table/nutrient-table';
             <span class="material-symbols-outlined" aria-hidden="true">share</span>
             <span class="btn-label">Compartir</span>
           </button>
-        </div>
+        </section>
       </div>
     </div>
   `,

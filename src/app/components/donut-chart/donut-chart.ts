@@ -8,6 +8,7 @@ import {
   inject,
   input,
   PLATFORM_ID,
+  signal,
   viewChild,
 } from '@angular/core';
 import Chart from 'chart.js/auto';
@@ -19,10 +20,60 @@ const FALLBACK_COLORS_LIGHT = ['#4285f4', '#ea4335', '#34a853', '#fbbc04'];
 const FALLBACK_COLORS_DARK = ['#8ab4f8', '#f28b82', '#81c995', '#fdd663'];
 const CHART_COLOR_VARS = ['--blue', '--red', '--green', '--yellow'];
 
+interface LegendItem {
+  index: number;
+  label: string;
+  keyClass: string;
+}
+
+const TOP_CORNER_ITEMS: LegendItem[] = [
+  { index: 0, label: 'Energía', keyClass: 'key-blue' },
+  { index: 1, label: 'Proteínas', keyClass: 'key-red' },
+];
+
+const BOTTOM_CORNER_ITEMS: LegendItem[] = [
+  { index: 3, label: 'Carbohidratos', keyClass: 'key-yellow' },
+  { index: 2, label: 'Grasas totales', keyClass: 'key-green' },
+];
+
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-donut-chart',
-  template: `<div #container style="width:100%; max-width:400px; margin:0 auto;"><canvas #canvasEl [id]="'grafico-' + chartKey()"></canvas></div>`,
+  template: `
+    <div class="donut-chart-wrapper">
+      <div class="donut-corners-row" role="group" aria-label="Identificadores superiores del gráfico">
+        @for (item of topCorners; track item.index) {
+          <button
+            type="button"
+            class="donut-legend-item"
+            [class.is-hidden]="hiddenSlices()[item.index]"
+            [attr.aria-pressed]="!hiddenSlices()[item.index]"
+            (click)="toggleSlice(item.index)"
+          >
+            <span class="color-key" [class]="item.keyClass" aria-hidden="true"></span>
+            <span class="donut-legend-label">{{ item.label }}</span>
+          </button>
+        }
+      </div>
+      <div #container class="donut-canvas-wrap">
+        <canvas #canvasEl [id]="'grafico-' + chartKey()"></canvas>
+      </div>
+      <div class="donut-corners-row" role="group" aria-label="Identificadores inferiores del gráfico">
+        @for (item of bottomCorners; track item.index) {
+          <button
+            type="button"
+            class="donut-legend-item"
+            [class.is-hidden]="hiddenSlices()[item.index]"
+            [attr.aria-pressed]="!hiddenSlices()[item.index]"
+            (click)="toggleSlice(item.index)"
+          >
+            <span class="color-key" [class]="item.keyClass" aria-hidden="true"></span>
+            <span class="donut-legend-label">{{ item.label }}</span>
+          </button>
+        }
+      </div>
+    </div>
+  `,
 })
 export class DonutChart {
   private readonly platformId = inject(PLATFORM_ID);
@@ -44,16 +95,16 @@ export class DonutChart {
   private contextLostTimer: ReturnType<typeof setTimeout> | null = null;
   private colorSchemeMedia: MediaQueryList | null = null;
 
+  readonly topCorners = TOP_CORNER_ITEMS;
+  readonly bottomCorners = BOTTOM_CORNER_ITEMS;
+  readonly hiddenSlices = signal<Record<number, boolean>>({});
+
   private readonly onColorSchemeChange = () => {
     if (!this.chart) return;
     const dataset = this.chart.data.datasets[0];
     if (dataset) {
       dataset.backgroundColor = this.getChartColors();
       dataset.borderColor = this.getBorderColor();
-    }
-    const legend = this.chart.options.plugins?.legend;
-    if (legend?.labels) {
-      legend.labels.color = this.getLegendColor();
     }
     this.chart.update('none');
   };
@@ -99,22 +150,12 @@ export class DonutChart {
     });
   }
 
-  private getLegendColor(): string {
-    if (isPlatformBrowser(this.platformId)) {
-      const titleColor = getComputedStyle(document.documentElement)
-        .getPropertyValue('--title-color')
-        .trim();
-      if (titleColor) return titleColor;
-    }
-    return this.colorSchemeMedia?.matches ? '#ffffff' : '#545961';
-  }
-
   private getBorderColor(): string {
     if (isPlatformBrowser(this.platformId)) {
-      const bg = getComputedStyle(document.documentElement).getPropertyValue('--bg').trim();
-      if (bg) return bg;
+      const cardBg = getComputedStyle(document.documentElement).getPropertyValue('--card-bg').trim();
+      if (cardBg) return cardBg;
     }
-    return this.colorSchemeMedia?.matches ? '#1f1f1f' : '#ffffff';
+    return this.colorSchemeMedia?.matches ? '#2c2c2c' : '#ffffff';
   }
 
   private getChartColors(): string[] {
@@ -169,8 +210,7 @@ export class DonutChart {
           animation: { duration: 0 },
           plugins: {
             legend: {
-              position: 'bottom',
-              labels: { color: this.getLegendColor() },
+              display: false,
             },
             tooltip: {
               callbacks: {
@@ -187,16 +227,38 @@ export class DonutChart {
           },
         },
       });
+      this.sincronizarVisibilidad();
     } else {
       this.chart.data.datasets[0].data = datos;
       this.chart.data.datasets[0].backgroundColor = colors;
       this.chart.data.datasets[0].borderColor = borderColor;
-      if (this.chart.options.plugins?.legend?.labels) {
-        this.chart.options.plugins.legend.labels.color = this.getLegendColor();
-      }
       this.chart.options.animation = { duration: 400 };
       this.chart.update();
     }
+  }
+
+  toggleSlice(index: number): void {
+    const nextHidden = !this.hiddenSlices()[index];
+    this.hiddenSlices.update((prev) => ({
+      ...prev,
+      [index]: nextHidden,
+    }));
+    if (this.chart) {
+      this.chart.toggleDataVisibility(index);
+      this.chart.update();
+    }
+  }
+
+  private sincronizarVisibilidad(): void {
+    if (!this.chart) return;
+    const ocultos = this.hiddenSlices();
+    for (const [idxStr, isHidden] of Object.entries(ocultos)) {
+      const idx = Number(idxStr);
+      if (isHidden && this.chart.getDataVisibility(idx)) {
+        this.chart.toggleDataVisibility(idx);
+      }
+    }
+    this.chart.update('none');
   }
 
   private handleContextLost(): void {

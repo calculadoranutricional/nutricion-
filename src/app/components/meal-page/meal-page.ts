@@ -27,6 +27,13 @@ interface ItemDisplay {
   unidad: string;
 }
 
+const MEAL_ACCENT: Record<string, { color: string; icon: string }> = {
+  Desayuno: { color: 'blue', icon: 'bakery_dining' },
+  Almuerzo: { color: 'red', icon: 'restaurant' },
+  Merienda: { color: 'yellow', icon: 'coffee' },
+  Cena: { color: 'green', icon: 'dark_mode' },
+};
+
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-meal-page',
@@ -42,101 +49,113 @@ interface ItemDisplay {
       </div>
 
       <div class="full-page-body" [id]="'comida-' + comida()">
-        <div class="contenedor-select" [class.select-activo]="categoriaSeleccionada() !== ''">
-          <span class="material-symbols-outlined select-icon-left" aria-hidden="true">category</span>
-          <select
-            [id]="'cat-' + comida()"
-            class="select-categorias"
-            aria-label="Categoría de alimento"
-            (change)="onCategoriaChange($event)"
-          >
-            <option value="">Todas las categorías</option>
-            @for (c of categorias; track c) {
-              <option [value]="c">{{ c }}</option>
-            }
-          </select>
-          <span class="material-symbols-outlined select-icon-right" aria-hidden="true">expand_more</span>
-        </div>
-
-        <div class="fila-comida">
-          <div class="contenedor-buscador">
-            <div
-              #buscarEl
-              [id]="'buscar-' + comida()"
-              contenteditable="true"
-              appEditableInput
-              [esBuscador]="true"
-              [maxDigitos]="20"
-              class="input-buscador"
-              data-max-digitos="20"
-              placeholder="Buscar alimento"
-              (input)="onBuscarInput()"
-            ></div>
-            <ul #sugerenciasEl [id]="'sugerencias-' + comida()" class="sugerencias-lista">
-              @for (a of sugerencias(); track a.nombre) {
-                <li>
-                  <button type="button" (click)="onSugerenciaClick(a, $event)">
-                    {{ a.nombre }}
-                  </button>
-                </li>
-              }
-            </ul>
+        <section class="seccion-card seccion-card-carga" [class]="cargaAccentClass()">
+          <div class="seccion-card-header">
+            <span class="seccion-card-title seccion-card-title-with-icon">
+              <span class="material-symbols-outlined seccion-meal-icon" aria-hidden="true">{{ iconoComida() }}</span>
+              <span>Alimentos</span>
+            </span>
+            <span class="seccion-card-count">
+              {{ itemsDisplay().length === 1 ? '1 cargado' : itemsDisplay().length + ' cargados' }}
+            </span>
           </div>
-          <div class="contenedor-peso">
-            <span class="etiqueta-peso">g</span>
-            <div
-              #pesoEl
-              [id]="'peso-' + comida()"
-              contenteditable="true"
-              appEditableInput
-              [soloEnteros]="true"
-              inputmode="decimal"
-              class="input-peso"
-              placeholder="Peso"
-            ></div>
-          </div>
-        </div>
 
-        <div [id]="'lista-' + comida()">
-          @if (itemsDisplay().length > 0) {
-            <div
-              #listaScrollEl
-              class="sin-scrollbar lista-comida-scroll"
-              [style.maxHeight]="itemsDisplay().length > 5 ? (listaMaxHeight() ?? '180px') : null"
-              [style.overflowY]="itemsDisplay().length > 5 ? 'auto' : null"
+          <div class="contenedor-select" [class.select-activo]="categoriaSeleccionada() !== ''">
+            <span class="material-symbols-outlined select-icon-left" aria-hidden="true">category</span>
+            <select
+              [id]="'cat-' + comida()"
+              class="select-categorias"
+              aria-label="Categoría de alimento"
+              (change)="onCategoriaChange($event)"
             >
-              <table>
-                <thead>
-                  <tr>
-                    <th>Alimento / Nutriente</th>
-                    <th>Cantidad</th>
-                    <th>Unidad</th>
-                    <th>Acción</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  @for (item of itemsDisplay(); track $index) {
-                    <tr>
-                      <td>{{ item.nombre }}</td>
-                      <td>{{ item.cantidad }}</td>
-                      <td>{{ item.unidad }}</td>
-                      <td>
-                        <button
-                          type="button"
-                          class="btn-eliminar btn-eliminar-item"
-                          aria-label="Eliminar"
-                          (click)="eliminarItem($index)"
-                        >
-                          ×
-                        </button>
-                      </td>
-                    </tr>
-                  }
-                </tbody>
-              </table>
+              <option value="">Todas las categorías</option>
+              @for (c of categorias; track c) {
+                <option [value]="c">{{ c }}</option>
+              }
+            </select>
+            <span class="material-symbols-outlined select-icon-right" aria-hidden="true">expand_more</span>
+          </div>
+
+          <div class="fila-comida">
+            <div class="contenedor-buscador">
+              <div
+                #buscarEl
+                [id]="'buscar-' + comida()"
+                contenteditable="true"
+                appEditableInput
+                [esBuscador]="true"
+                [maxDigitos]="20"
+                class="input-buscador"
+                data-max-digitos="20"
+                placeholder="Buscar alimento"
+                (input)="onBuscarInput()"
+              ></div>
+              <ul #sugerenciasEl [id]="'sugerencias-' + comida()" class="sugerencias-lista">
+                @for (a of sugerencias(); track a.nombre) {
+                  <li>
+                    <button type="button" (click)="onSugerenciaClick(a, $event)">
+                      {{ a.nombre }}
+                    </button>
+                  </li>
+                }
+              </ul>
             </div>
-          }
-        </div>
+            <div class="contenedor-peso">
+              <span class="etiqueta-peso">g</span>
+              <div
+                #pesoEl
+                [id]="'peso-' + comida()"
+                contenteditable="true"
+                appEditableInput
+                [soloEnteros]="true"
+                inputmode="decimal"
+                class="input-peso"
+                placeholder="Peso"
+              ></div>
+            </div>
+          </div>
+
+          <div [id]="'lista-' + comida()">
+            @if (itemsDisplay().length > 0) {
+              <div
+                #listaScrollEl
+                class="sin-scrollbar lista-comida-scroll"
+                [style.maxHeight]="itemsDisplay().length > 5 ? (listaMaxHeight() ?? '180px') : null"
+                [style.overflowY]="itemsDisplay().length > 5 ? 'auto' : null"
+              >
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Alimento / Nutriente</th>
+                      <th>Cantidad</th>
+                      <th>Unidad</th>
+                      <th>Acción</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    @for (item of itemsDisplay(); track $index) {
+                      <tr>
+                        <td>{{ item.nombre }}</td>
+                        <td>{{ item.cantidad }}</td>
+                        <td>{{ item.unidad }}</td>
+                        <td>
+                          <button
+                            type="button"
+                            class="btn-eliminar btn-eliminar-item"
+                            aria-label="Eliminar"
+                            (click)="eliminarItem($index)"
+                          >
+                            ×
+                          </button>
+                        </td>
+                      </tr>
+                    }
+                  </tbody>
+                </table>
+              </div>
+            }
+          </div>
+        </section>
 
         <div class="contenedor0" [class.hidden]="items().length === 0">
           <div class="vista-toggle-bar">
@@ -181,17 +200,41 @@ interface ItemDisplay {
             </button>
           </div>
 
-          <div [id]="'seccion0-' + comida()" [class.hidden]="!graficoVisible()">
-            <h4 [id]="'titulo-grafico-' + comida()">Gráfico Nutricional</h4>
+          <section
+            [id]="'seccion0-' + comida()"
+            [class]="'seccion-card ' + cargaAccentClass()"
+            [class.hidden]="!graficoVisible()"
+          >
+            <div class="seccion-card-header">
+              <span class="seccion-card-title seccion-card-title-with-icon">
+                <span class="material-symbols-outlined seccion-meal-icon" aria-hidden="true">{{ iconoComida() }}</span>
+                <span [id]="'titulo-grafico-' + comida()">Gráfico Nutricional</span>
+              </span>
+            </div>
             <app-donut-chart
               [chartKey]="comida()"
               [totales]="totales()"
               [vdr]="vdr()"
               [visible]="items().length > 0 && graficoVisible()"
             />
-          </div>
+          </section>
 
-          <div [id]="'seccion1-' + comida()" [class.hidden]="!tablaVisible()">
+          <section
+            [id]="'seccion1-' + comida()"
+            [class]="'seccion-card ' + cargaAccentClass()"
+            [class.hidden]="!tablaVisible()"
+          >
+            <div class="seccion-card-header">
+              <span class="seccion-card-title seccion-card-title-with-icon">
+                <span class="material-symbols-outlined seccion-meal-icon" aria-hidden="true">{{ iconoComida() }}</span>
+                <span [id]="'titulo-tabla-' + comida()" [class.hidden]="modoManual()">
+                  Tabla Nutricional
+                </span>
+                <span [id]="'titulo-editor-' + comida()" [class.hidden]="!modoManual()">
+                  Editor Manual
+                </span>
+              </span>
+            </div>
             <div class="tabla-actions-bar" [class.modo-manual]="modoManual()">
               @if (!modoManual()) {
                 <button
@@ -223,7 +266,6 @@ interface ItemDisplay {
                 <span class="btn-label">{{ modoManual() ? 'Aplicar' : 'Agregar' }}</span>
               </button>
             </div>
-            <h4 [id]="'titulo-tabla-' + comida()" [class.hidden]="modoManual()">Tabla Nutricional</h4>
             <div [id]="'tabla-' + comida()" [class.hidden]="modoManual()">
               <app-nutrient-table
                 [totales]="totales()"
@@ -233,7 +275,6 @@ interface ItemDisplay {
                 [mostrarTodos]="mostrarTodos()"
               />
             </div>
-            <h4 [id]="'titulo-editor-' + comida()" [class.hidden]="!modoManual()">Editor Manual</h4>
             <div [id]="'editor-' + comida()" [class.hidden]="!modoManual()">
               <app-manual-editor
                 #manualEditor
@@ -247,7 +288,7 @@ interface ItemDisplay {
               <span class="material-symbols-outlined" aria-hidden="true">share</span>
               <span class="btn-label">Compartir</span>
             </button>
-          </div>
+          </section>
         </div>
       </div>
     </div>
@@ -274,6 +315,15 @@ export class MealPage {
   readonly tablaVisible = signal<boolean>(true);
   readonly modoManual = signal<boolean>(false);
   readonly listaMaxHeight = signal<string | null>(null);
+
+  readonly cargaAccentClass = computed(() => {
+    const meta = MEAL_ACCENT[this.comida()];
+    return meta ? `meal-accent-${meta.color}` : 'meal-accent-blue';
+  });
+
+  readonly iconoComida = computed(() => {
+    return (MEAL_ACCENT[this.comida()] || { icon: 'restaurant' }).icon;
+  });
 
   constructor() {
     afterRenderEffect(() => {
