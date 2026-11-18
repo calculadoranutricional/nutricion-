@@ -93,9 +93,7 @@ const MEAL_ACCENT: Record<string, { color: string; icon: string }> = {
               <ul #sugerenciasEl [id]="'sugerencias-' + comida()" class="sugerencias-lista">
                 @for (a of sugerencias(); track a.nombre) {
                   <li>
-                    <button type="button" (click)="onSugerenciaClick(a, $event)">
-                      {{ a.nombre }}
-                    </button>
+                    <button type="button" (click)="onSugerenciaClick(a, $event)">{{ a.nombre }}</button>
                   </li>
                 }
               </ul>

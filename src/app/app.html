@@ -71,9 +71,7 @@
       @for (comida of comidas; track comida) {
         <app-meal-section [comida]="comida" />
       }
-      @if (store.mostrarResumenTotal()) {
-        <app-total-section />
-      }
+      <app-total-section />
     </main>
   </div>
 

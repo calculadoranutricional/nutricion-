@@ -6,13 +6,10 @@ export const ALIMENTOS: Alimento[] = [
     categoria: 'Huevos',
     composicion: {
       Agua: 75.3,
-      'Sólidos totales': 24.7,
       Energía: 143,
       Proteínas: 12.6,
       Carbohidratos: 0.72,
       'Grasas totales': 9.5,
-      'Alcohol etílico': 0,
-      Cenizas: 1.1,
     },
   },
   {
@@ -20,13 +17,10 @@ export const ALIMENTOS: Alimento[] = [
     categoria: 'Lácteos',
     composicion: {
       Agua: 87,
-      'Sólidos totales': 13,
       Energía: 61,
       Proteínas: 3.2,
       Carbohidratos: 4.8,
       'Grasas totales': 3.3,
-      'Alcohol etílico': 0,
-      Cenizas: 0.7,
     },
   },
   {
@@ -34,13 +28,10 @@ export const ALIMENTOS: Alimento[] = [
     categoria: 'Cereales',
     composicion: {
       Agua: 36,
-      'Sólidos totales': 64,
       Energía: 265,
       Proteínas: 9,
       Carbohidratos: 49,
       'Grasas totales': 3.2,
-      'Alcohol etílico': 0,
-      Cenizas: 1.5,
     },
   },
   {
@@ -48,13 +39,10 @@ export const ALIMENTOS: Alimento[] = [
     categoria: 'Frutas',
     composicion: {
       Agua: 85.6,
-      'Sólidos totales': 14.4,
       Energía: 52,
       Proteínas: 0.26,
       Carbohidratos: 13.8,
       'Grasas totales': 0.17,
-      'Alcohol etílico': 0,
-      Cenizas: 0.19,
     },
   },
   {
@@ -62,13 +50,10 @@ export const ALIMENTOS: Alimento[] = [
     categoria: 'Carnes',
     composicion: {
       Agua: 64,
-      'Sólidos totales': 36,
       Energía: 239,
       Proteínas: 27.3,
       Carbohidratos: 0,
       'Grasas totales': 13.6,
-      'Alcohol etílico': 0,
-      Cenizas: 1.1,
     },
   },
   {
@@ -76,13 +61,10 @@ export const ALIMENTOS: Alimento[] = [
     categoria: 'Cereales',
     composicion: {
       Agua: 68,
-      'Sólidos totales': 32,
       Energía: 130,
       Proteínas: 2.4,
       Carbohidratos: 28.2,
       'Grasas totales': 0.3,
-      'Alcohol etílico': 0,
-      Cenizas: 0.1,
     },
   },
   {
@@ -90,13 +72,10 @@ export const ALIMENTOS: Alimento[] = [
     categoria: 'Lácteos',
     composicion: {
       Agua: 60,
-      'Sólidos totales': 40,
       Energía: 264,
       Proteínas: 18,
       Carbohidratos: 3.1,
       'Grasas totales': 21,
-      'Alcohol etílico': 0,
-      Cenizas: 1.8,
     },
   },
   {
@@ -104,13 +83,10 @@ export const ALIMENTOS: Alimento[] = [
     categoria: 'Verduras',
     composicion: {
       Agua: 94.5,
-      'Sólidos totales': 5.5,
       Energía: 18,
       Proteínas: 0.9,
       Carbohidratos: 3.9,
       'Grasas totales': 0.2,
-      'Alcohol etílico': 0,
-      Cenizas: 0.5,
     },
   },
   {
@@ -118,13 +94,10 @@ export const ALIMENTOS: Alimento[] = [
     categoria: 'Verduras',
     composicion: {
       Agua: 77,
-      'Sólidos totales': 23,
       Energía: 87,
       Proteínas: 1.9,
       Carbohidratos: 20,
       'Grasas totales': 0.1,
-      'Alcohol etílico': 0,
-      Cenizas: 0.9,
     },
   },
   {
@@ -132,13 +105,10 @@ export const ALIMENTOS: Alimento[] = [
     categoria: 'Grasas y aceites',
     composicion: {
       Agua: 0.2,
-      'Sólidos totales': 99.8,
       Energía: 884,
       Proteínas: 0,
       Carbohidratos: 0,
       'Grasas totales': 100,
-      'Alcohol etílico': 0,
-      Cenizas: 0,
     },
   },
 ];

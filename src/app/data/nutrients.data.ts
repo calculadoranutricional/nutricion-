@@ -21,12 +21,6 @@ export const NUTRIENTES: ArbolNutrientes = {
       descripcion:
         'Componente principal del alimento; esencial para funciones celulares, transporte de nutrientes y regulación de la temperatura corporal. No aporta energía (0 kcal/g).',
     },
-    {
-      nombre: 'Sólidos totales',
-      unidad: 'g',
-      descripcion:
-        'Parte seca del alimento que incluye carbohidratos, proteínas, grasas y minerales; representa la materia nutritiva disponible. Su aporte energético depende de los componentes individuales.',
-    },
   ],
 
   Macronutrientes: {
@@ -35,7 +29,7 @@ export const NUTRIENTES: ArbolNutrientes = {
         nombre: 'Energía',
         unidad: 'kcal',
         descripcion:
-          'Cantidad total de energía que el cuerpo puede obtener del alimento; proviene de proteínas (4 kcal/g), carbohidratos (4 kcal/g), grasas (9 kcal/g) y alcohol (7 kcal/g).',
+          'Cantidad total de energía que el cuerpo puede obtener del alimento; proviene de proteínas (4 kcal/g), carbohidratos (4 kcal/g) y grasas (9 kcal/g).',
       },
       {
         nombre: 'Proteínas',
@@ -47,30 +41,13 @@ export const NUTRIENTES: ArbolNutrientes = {
         nombre: 'Carbohidratos',
         unidad: 'g',
         descripcion:
-          'Incluye azúcares, almidón y fibras; los azúcares y el almidón aportan energía (4 kcal/g), mientras que las fibras promueven la salud digestiva.',
+          'Incluye carbohidratos digeribles (4 kcal/g) y fibras que promueven la salud digestiva.',
       },
       {
         nombre: 'Grasas totales',
         unidad: 'g',
         descripcion:
           'Lípidos que aportan energía concentrada (9 kcal/g); participan en la absorción de vitaminas liposolubles y en la formación de membranas celulares.',
-      },
-      {
-        nombre: 'Alcohol etílico',
-        unidad: 'g',
-        descripcion:
-          'Fuente de energía no esencial (7 kcal/g); se metaboliza en el hígado y aporta calorías sin proporcionar nutrientes esenciales.',
-      },
-      {
-        nombre: 'Cafeína',
-        unidad: 'mg',
-        descripcion: 'Estimulante del sistema nervioso central; aumenta alerta y reduce la fatiga.',
-      },
-      {
-        nombre: 'Cenizas',
-        unidad: 'g',
-        descripcion:
-          'Residuo mineral total tras la combustión del alimento; refleja la cantidad total de minerales presentes.',
       },
     ],
 
@@ -168,16 +145,16 @@ export const NUTRIENTES: ArbolNutrientes = {
           descripcion:
             'Participa en la síntesis de colágeno y neurotransmisores; contribuye a funciones celulares y antioxidantes.',
         },
+        {
+          nombre: 'Taurina',
+          unidad: 'mg',
+          descripcion:
+            'Ácido aminosulfónico condicionalmente esencial; participa en la conjugación de ácidos biliares, osmorregulación, función retiniana y cardíaca. Es especialmente relevante en lactantes y situaciones de estrés metabólico.',
+        },
       ],
     },
 
     'Componentes de carbohidratos': [
-      {
-        nombre: 'Azúcares totales',
-        unidad: 'g',
-        descripcion:
-          'Carbohidratos simples presentes de forma natural o añadida que aportan energía rápida.',
-      },
       {
         nombre: 'Fibra insoluble',
         unidad: 'g',
@@ -190,53 +167,24 @@ export const NUTRIENTES: ArbolNutrientes = {
         descripcion:
           'Carbohidrato soluble no digerible; ayuda a regular colesterol y glucosa en sangre. Aporta energía limitada (~2 kcal/g).',
       },
-      {
-        nombre: 'Almidón',
-        unidad: 'g',
-        descripcion:
-          'Carbohidrato complejo que libera glucosa lentamente, proporcionando energía sostenida.',
-      },
     ],
 
     'Componentes de grasas': [
       {
-        nombre: 'Grasas monoinsaturadas',
+        nombre: 'Omega 3 (ácido alfa-linolénico)',
         unidad: 'g',
-        descripcion:
-          'Grasas saludables presentes en aceite de oliva, frutos secos y palta; favorecen la salud cardiovascular.',
+        descripcion: 'Grasa esencial con funciones antiinflamatorias y protectoras del corazón.',
       },
       {
-        nombre: 'Grasas poliinsaturadas',
-        unidad: 'g',
-        descripcion:
-          'Incluyen ácidos grasos esenciales omega-3 y omega-6; participan en funciones antiinflamatorias y hormonales.',
-      },
-      {
-        nombre: 'Grasas saturadas',
-        unidad: 'g',
-        descripcion:
-          'Lípidos sólidos a temperatura ambiente; su consumo excesivo puede aumentar el riesgo cardiovascular.',
-      },
-      {
-        nombre: 'Grasas trans',
-        unidad: 'g',
-        descripcion: 'Grasas artificiales que aumentan el riesgo cardiovascular; deben evitarse.',
-      },
-      {
-        nombre: 'Colesterol',
-        unidad: 'mg',
-        descripcion:
-          'Lípido de origen animal necesario en pequeñas cantidades para hormonas y membranas celulares.',
-      },
-      {
-        nombre: 'Ácido linoleico (Omega 6)',
+        nombre: 'Omega 6 (ácido linoleico)',
         unidad: 'g',
         descripcion: 'Grasa esencial que participa en procesos inflamatorios, hormonales y celulares.',
       },
       {
-        nombre: 'Ácido alfa-linolénico (Omega 3)',
+        nombre: 'ARA (ácido araquidónico)',
         unidad: 'g',
-        descripcion: 'Grasa esencial con funciones antiinflamatorias y protectoras del corazón.',
+        descripcion:
+          'Ácido graso omega-6 condicionalmente esencial; fundamental en membranas celulares, desarrollo cerebral y señalización eicosanoide, especialmente en lactantes o cuando la síntesis endógena es insuficiente.',
       },
       {
         nombre: 'EPA (ácido eicosapentaenoico)',
@@ -288,45 +236,45 @@ export const NUTRIENTES: ArbolNutrientes = {
           'Antioxidante que fortalece el sistema inmune, ayuda a formar colágeno y mejora la absorción de hierro.',
       },
       {
-        nombre: 'Tiamina (B1)',
+        nombre: 'Vitamina B1 (tiamina)',
         unidad: 'mg',
         descripcion: 'Participa en el metabolismo energético y el funcionamiento nervioso.',
       },
       {
-        nombre: 'Riboflavina (B2)',
+        nombre: 'Vitamina B2 (riboflavina)',
         unidad: 'mg',
         descripcion:
           'Apoya el metabolismo de carbohidratos, grasas y proteínas; mantiene piel y ojos saludables.',
       },
       {
-        nombre: 'Niacina (B3)',
+        nombre: 'Vitamina B3 (niacina)',
         unidad: 'mg',
         descripcion: 'Interviene en el metabolismo energético y la síntesis de ácidos grasos.',
       },
       {
-        nombre: 'Ácido pantoténico (B5)',
+        nombre: 'Vitamina B5 (ácido pantoténico)',
         unidad: 'mg',
         descripcion: 'Participa en la producción de energía y síntesis de hormonas y colesterol.',
       },
       {
-        nombre: 'Piridoxina (B6)',
+        nombre: 'Vitamina B6 (piridoxina)',
         unidad: 'mg',
         descripcion: 'Participa en el metabolismo de aminoácidos y la síntesis de neurotransmisores.',
       },
       {
-        nombre: 'Biotina (B7)',
+        nombre: 'Vitamina B7 (biotina)',
         unidad: 'µg',
         descripcion:
           'Coenzima que apoya el metabolismo de macronutrientes y la salud de cabello, piel y uñas.',
       },
       {
-        nombre: 'Ácido fólico (B9)',
+        nombre: 'Vitamina B9 (ácido fólico)',
         unidad: 'µg',
         descripcion:
           'Esencial para la formación de ADN y desarrollo fetal. Su requerimiento aumenta en embarazo.',
       },
       {
-        nombre: 'Cobalamina (B12)',
+        nombre: 'Vitamina B12 (cobalamina)',
         unidad: 'µg',
         descripcion:
           'Necesaria para la formación de glóbulos rojos, función neurológica y síntesis de ADN.',
@@ -336,6 +284,15 @@ export const NUTRIENTES: ArbolNutrientes = {
         unidad: 'mg',
         descripcion:
           'Importante para el cerebro, memoria y metabolismo de grasas. Su deficiencia afecta desarrollo fetal.',
+      },
+    ],
+
+    'Nutrientes condicionalmente esenciales': [
+      {
+        nombre: 'L-Carnitina',
+        unidad: 'mg',
+        descripcion:
+          'Compuesto derivado de lisina y metionina condicionalmente esencial; transporta ácidos grasos de cadena larga hacia la mitocondria para producir energía. Puede resultar limitante en prematuros, hemodiálisis o ciertos trastornos metabólicos.',
       },
     ],
 
@@ -375,12 +332,6 @@ export const NUTRIENTES: ArbolNutrientes = {
           unidad: 'mg',
           descripcion:
             'Ayuda en digestión y equilibrio de fluidos; componente del ácido gástrico.',
-        },
-        {
-          nombre: 'Azufre (S)',
-          unidad: 'mg',
-          descripcion:
-            'Componente de aminoácidos y vitaminas; importante para el metabolismo y los tejidos.',
         },
       ],
       Oligoelementos: [
@@ -422,11 +373,6 @@ export const NUTRIENTES: ArbolNutrientes = {
           nombre: 'Molibdeno (Mo)',
           unidad: 'µg',
           descripcion: 'Cofactor enzimático que participa en el metabolismo de aminoácidos.',
-        },
-        {
-          nombre: 'Cromo (Cr)',
-          unidad: 'µg',
-          descripcion: 'Contribuye al metabolismo de glucosa y al control del azúcar en sangre.',
         },
         {
           nombre: 'Flúor (F)',
